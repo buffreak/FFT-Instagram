@@ -71,11 +71,11 @@ if (!file_exists("$username.ig")) {
         if ($type == "followers") {
             $cekfoll = instagram(1, $data->useragent, 'friendships/' . $userid . '/followers/', $data->cookies);
             $cekfoll = json_decode($cekfoll[1]);
-            $cekfoll = array_slice($cekfoll->users, 0, $jumlah);
+            $cekfoll = array_slice($cekfoll->users, 0);
         } else {
             $cekfoll = instagram(1, $data->useragent, 'friendships/' . $userid . '/following/', $data->cookies);
             $cekfoll = json_decode($cekfoll[1]);
-            $cekfoll = array_slice($cekfoll->users, 0, $jumlah);
+            $cekfoll = array_slice($cekfoll->users, 0);
         }
         foreach ($cekfoll as $ids) {
             $getdata = instagram(1, $data->useragent, 'feed/user/' . $ids->pk . '/', $data->cookies);
