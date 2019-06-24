@@ -87,7 +87,6 @@ if (!file_exists("$username.ig")) {
             }
             $getdata = instagram(1, $data->useragent, 'feed/user/' . $cekfoll->pk . '/', $data->cookies);
             $get     = json_decode($getdata[1]);
-            print_r($get);
             $dielz   = $get->items[0]->id;
             if (!file_exists('jedafft-' . $username)) {
                 fopen("jedafft-" . $username, "w");
