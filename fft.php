@@ -6,17 +6,17 @@ echo "Copyright " . date('Y') . " By Teuku Muhammad Rivai fb.com/RivaiWatermark\
 echo "Opsi Login : 1 = Login Token FB\nInput :";
 $opsiLogin = trim(fgets(STDIN));
 if ($opsiLogin == '1') {
-    echo "Token FB EAA.....\nInput :";
+    echo "Token FB EAA..... :  ";
     $username = trim(fgets(STDIN));
 } else {
-    echo "Masukkan Username..\nInput :";
+    echo "Masukkan Username : ";
     $username = trim(fgets(STDIN));
 }
 if (!file_exists("$username.ig")) {
     if ($opsiLogin == 1) {
         $log = masuk($username);
     } else {
-        echo "Masukkan Password..\nInput :";
+        echo "Masukkan Password : ";
         $password = trim(fgets(STDIN));
         $log      = masuk2($username, $password);
     }
@@ -42,7 +42,7 @@ if (!file_exists("$username.ig")) {
             echo "Cookie Telah Mati, Sukses Membuat Ulang Cookie\n";
         }
     } else {
-        echo "Type? (1 = Followers)\n Input : ";
+        echo "Type? (1 = Followers) : ";
         $type = trim(fgets(STDIN));
         if ($type == 1) {
             $type = "followers";
@@ -50,18 +50,17 @@ if (!file_exists("$username.ig")) {
             $type = "following";
         }
         echo "Kamu Memilih type $type\n";
-        echo "Target? (Tanpa @)\nInput : ";
+        echo "Target? (Tanpa @) : ";
         $target = trim(fgets(STDIN));
-        echo "Ketikkan mau komen apa? misal : Follback dong...Jika Ingin Random Pisahkan dengan " | "\nInput : ";
+        echo "Komentar Foto pisahkan dengan '|' : ";
         $komen = trim(fgets(STDIN));
         $komen = explode("|", $komen);
-        echo "Ketikkan mau DM apa? misal : Follback dong...Jika Ingin Random Pisahkan dengan " | "\nInput : ";
+        echo "DM Pisahkan dengan '|' : ";
         $directPesan = trim(fgets(STDIN));
         $directPesan = explode("|", $directPesan);
         $data        = file_get_contents($username . '.ig');
         $data        = json_decode($data);
-        
-        $userid = instagram(1, $data->useragent, 'users/' . $target . '/usernameinfo', $data->cookies);
+        $userid = instagram(1, $data->useragent, 'users/'.$target.'/usernameinfo/', $data->cookies);
         $userid = json_decode($userid[1]);
         $userid = $userid->user->pk;
         if ($type == "followers") {
@@ -69,23 +68,22 @@ if (!file_exists("$username.ig")) {
         } else {
             $getFoll = instagram(1, $data->useragent, 'friendships/' . $userid . '/following/', $data->cookies);
         }
-        $cekfollDecode = json_decode($getFoll[1]);
-        $cekfoll = array_slice($cekfollDecode->users, 0);
-        $countMaxId = count($cekfollDecode->users);
-        $i = 1;
-        while($cekfollDecode->next_max_id !== NULL) {
-            if($countMaxId === $i){
+        $idsDecode = json_decode($getFoll[1]);
+        $cekfoll = array_slice($idsDecode->users, 0);
+        $countMaxId = count($idsDecode->users) - 1;
+        // echo $countMaxId."\n";
+        foreach($cekfoll as $key => $ids) {
+            if($countMaxId === $key){
                 if ($type == "followers") {
-                    $getFoll = instagram(1, $data->useragent, 'friendships/' . $userid . '/followers?max_id='.$cekfollDecode->next_max_id, $data->cookies);
+                    $getFoll = instagram(1, $data->useragent, 'friendships/' . $userid . '/followers?max_id='.$idsDecode->next_max_id, $data->cookies);
                 } else {
-                    $getFoll = instagram(1, $data->useragent, 'friendships/' . $userid . '/following?max_id'.$cekfollDecode->next_max_id, $data->cookies);
+                    $getFoll = instagram(1, $data->useragent, 'friendships/' . $userid . '/following?max_id'.$idsDecode->next_max_id, $data->cookies);
                 }
-                $cekfollDecode = json_decode($getFoll[1]);
-                $cekfoll = array_slice($cekfollDecode->users, 0);
-                $countMaxId = count($cekfollDecode->users);
-                $i = 1;
+                $idsDecode = json_decode($getFoll[1]);
+                $cekfoll = array_slice($idsDecode->users, 0);
+                $countMaxId = count($idsDecode->users) - 1;
             }
-            $getdata = instagram(1, $data->useragent, 'feed/user/' . $cekfoll->pk . '/', $data->cookies);
+            $getdata = instagram(1, $data->useragent, 'feed/user/' . $ids->pk . '/', $data->cookies);
             $get     = json_decode($getdata[1]);
             $dielz   = $get->items[0]->id;
             if (!file_exists('jedafft-' . $username)) {
@@ -95,31 +93,32 @@ if (!file_exists("$username.ig")) {
                 $no = file_get_contents('jedafft-' . $username);
             }
             if ($get->message == "Not authorized to view user") {
-                echo "User Private Ga Difollow Kentot!1!1! @" . $cekfoll->username . "\n";
+                echo "User Private Ga Difollow Kentot!1!1! @" . $ids->username . "\n";
             } else {
-                $checkFriendship = instagram(1, $data->useragent, 'friendships/show/' . $cekfoll->pk . "/", $data->cookies, generateSignature('{"user_id":"' . $cekfoll->pk . '"}'));
+                $checkFriendship = instagram(1, $data->useragent, 'friendships/show/' . $ids->pk . "/", $data->cookies, generateSignature('{"user_id":"' . $ids->pk . '"}'));
                 $checkFriendship = json_decode($checkFriendship[1]);
                 if ($checkFriendship->status <> "fail") {
                     if ($checkFriendship->following == true && $checkFriendship->followed_by == true) {
-                        echo "Lo Berdua Udah Saling Follow @" . $cekfoll->username . "\n";
+                        echo "Lo Berdua Udah Saling Follow @" . $ids->username . "\n";
                         sleep(2);
                     } elseif ($checkFriendship->following == true && $checkFriendship->followed_by == false) {
-                        echo "Lo udah Follow dia, Tapi Dia Belum Follback lo haha sad @" . $cekfoll->username . "\n";
+                        echo "Lo udah Follow dia, Tapi Dia Belum Follback lo haha sad @" . $ids->username . "\n";
                         sleep(2);
                     } elseif ($checkFriendship->following == false && $checkFriendship->followed_by == true) {
-                        echo "Follback Lah dia kentot  @" . $cekfoll->username . "\n";
-                        //$follow = instagram(1, $data->useragent, 'friendships/create/' . $cekfoll->pk . "/", $data->cookies, generateSignature('{"user_id":"' . $cekfoll->pk . '"}')); // UNTUK FOLLBACK
+                        echo "Follback Lah dia kentot  @" . $ids->username . "\n";
+                        //$follow = instagram(1, $data->useragent, 'friendships/create/' . $ids->pk . "/", $data->cookies, generateSignature('{"user_id":"' . $ids->pk . '"}')); // UNTUK FOLLBACK
                         sleep(2);
                     } else {
-                        $follow = instagram(1, $data->useragent, 'friendships/create/' . $cekfoll->pk . "/", $data->cookies, generateSignature('{"user_id":"' . $cekfoll->pk . '"}'));
-                        if ($followStatus->status != "ok") {
-                            echo "Anda Tidak bisa menggunakan Follow karena Dibanned Sementara atau Permanent, Silahkan Matikan Auto FFT Silahkan Tunggu sampai sudah di unbanned Mrax\n";
+                        $follow = instagram(1, $data->useragent, 'friendships/create/' . $ids->pk . "/", $data->cookies, generateSignature('{"user_id":"' . $ids->pk . '"}'));
+                        $follow = json_decode($follow[1]);
+                        if ($follow->status != "ok") {
+                            echo $follow->status."\n";
                             break;
                         } else {
                             if (count($directPesan) == 1) {
-                                $dm = directMessage($cekfoll->pk, $data->useragent, $data->cookies, $directPesan[0]);
+                                $dm = directMessage($ids->pk, $data->useragent, $data->cookies, $directPesan[0]);
                             } else {
-                                $dm = directMessage($cekfoll->pk, $data->useragent, $data->cookies, $directPesan[rand(0, count($directPesan) - 1)]);
+                                $dm = directMessage($ids->pk, $data->useragent, $data->cookies, $directPesan[rand(0, count($directPesan) - 1)]);
                             }
                             if (count($komen) == 1) {
                                 $comment = instagram(1, $data->useragent, 'media/' . $dielz . '/comment/', $data->cookies, generateSignature('{"comment_text":"' . $komen[0] . '"}'));
@@ -129,12 +128,11 @@ if (!file_exists("$username.ig")) {
                             $like          = instagram(1, $data->useragent, 'media/' . $dielz . '/like/', $data->cookies, generateSignature('{"media_id":"' . $dielz . '"}'));
                             $commentStatus = json_decode($comment[1]);
                             $likeStatus    = json_decode($like[1]);
-                            $followStatus  = json_decode($followStatus[1]);
                             if ($dm == 'fail' || $commentStatus->status != "ok" || $likeStatus->status != "ok") {
-                                echo "DM STATUS => ".$dm.", COMMENT STATUS => ".$commentStatus->status.", LIKE STATUS => ".$likeStatus->status; 
+                                echo "FOLLOW STATUS => SUKSES, DM STATUS => ".$dm.", COMMENT STATUS => ".$commentStatus->status.", LIKE STATUS => ".$likeStatus->status; 
                                 sleep(rand(10, 15)); // UBAH SESUAI KEBUTUHAN / PAKE USLEEP()
                             }else{
-                                echo "Success Follow @" . $cekfoll->username . " Dengan Auto DM, Like dan Komen Foto Terbaru\n";
+                                echo "Success Follow @" . $ids->username . " Dengan Auto DM, Like dan Komen Foto Terbaru\n";
                                 $h = fopen("jedafft-" . $username, "w");
                                 fwrite($h, $no++ . "\n");
                                 fclose($h);
@@ -143,13 +141,12 @@ if (!file_exists("$username.ig")) {
                         }
                     }  
                 } else {
-                    echo "Fail Follow @" . $cekfoll->username . " (" . $checkFriendship->message . ")\n";
+                    echo "Fail Follow @" . $ids->username . " (" . $checkFriendship->message . ")\n";
                     $h = fopen("jedafft-" . $username, "w");
                     fwrite($h, 0);
                     fclose($h);
                 }
             }
-            $i++;
         }
     }
 }
