@@ -50,7 +50,7 @@ function get_csrftoken()
 {
 	$fetch = instagram('si/fetch_headers/', null, null);
 	$header = $fetch[0];
-	if (!preg_match('#set-cookie: csrftoken=([^;]+)#', $fetch[0], $token)) {
+	if (!preg_match('/set-cookie: csrftoken=([^;]+)/', $fetch[0], $token)) {
 		return json_encode(array('result' => false, 'content' => 'Missing csrftoken'));
 	} else {
 		return substr($token[0], 22);
@@ -103,12 +103,15 @@ function login($post_username)
 	$header = $a[0];
 	$a = json_decode($a[1]);
 	if($a->status == 'ok'){
-		preg_match_all('%set-cookie: (.*?);%',$header,$d);$cookies = '';
-		for($o=0;$o<count($d[0]);$o++)$cookies.=$d[1][$o].";";
+        preg_match_all('/set-cookie:([^;]+)/',$header,$d);
+        $cookies = '';
+		for($o=0;$o<count($d[0]);$o++){
+            $cookies.= trim($d[1][$o].";");
+        }
 		$array = json_encode(['result' => true, 'cookies' => $cookies, 'useragent' => generate_useragent(), 'id' => $a->logged_in_user->pk, 'devid' => generateUUID(true), 'username' => $a->logged_in_user->username, 'password' => $post_username]);
-		//$array = json_encode(['result' => true, 'cookies' => $cookies, 'useragent' => generate_useragent(), 'id' => $a->logged_in_user->pk, 'username' => $post_username, 'password' => $post_password]);
+		// //$array = json_encode(['result' => true, 'cookies' => $cookies, 'useragent' => generate_useragent(), 'id' => $a->logged_in_user->pk, 'username' => $post_username, 'password' => $post_password]);
 	} else {
-		$array = json_encode(['result' => false, 'msg' => ''.$a->message.'']);
+		 $array = json_encode(['result' => false, 'msg' => ''.$a->message.'']);
 	}
 	return $array;
 }
@@ -208,8 +211,11 @@ function login2($post_username, $post_password)
     $header = $a[0];
     $a = json_decode($a[1]);
     if($a->status == 'ok'){
-        preg_match_all('%set-cookie: (.*?);%',$header,$d);$cookies = '';
-        for($o=0;$o<count($d[0]);$o++)$cookies.=$d[1][$o].";";
+        preg_match_all('/set-cookie:([^;]+)/',$header,$d);
+        $cookies = '';
+        for($o=0;$o<count($d[0]);$o++){
+            $cookies.= trim($d[1][$o].";");
+        }
         $array = json_encode(['result' => true, 'cookies' => $cookies, 'useragent' => generate_useragent(), 'id' => $id, 'devid' => generateUUID(true), 'username' => $post_username, 'password' => $post_password]);
         //$array = json_encode(['result' => true, 'cookies' => $cookies, 'useragent' => generate_useragent(), 'id' => $a->logged_in_user->pk, 'username' => $post_username, 'password' => $post_password]);
     } else {
