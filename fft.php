@@ -151,6 +151,6 @@ if (!file_exists("$username.ig")) {
             }
             $i++;
         }
-    } 
+    }
 }
 ?> 
