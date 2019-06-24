@@ -216,7 +216,7 @@ function login2($post_username, $post_password)
         for($o=0;$o<count($d[0]);$o++){
             $cookies.= trim($d[1][$o].";");
         }
-        $array = json_encode(['result' => true, 'cookies' => $cookies, 'useragent' => generate_useragent(), 'id' => $id, 'devid' => generateUUID(true), 'username' => $post_username, 'password' => $post_password]);
+        $array = json_encode(['result' => true, 'cookies' => $cookies, 'useragent' => generate_useragent(), 'id' => $a->logged_in_user->pk, 'devid' => generateUUID(true), 'username' => $post_username, 'password' => $post_password]);
         //$array = json_encode(['result' => true, 'cookies' => $cookies, 'useragent' => generate_useragent(), 'id' => $a->logged_in_user->pk, 'username' => $post_username, 'password' => $post_password]);
     } else {
         $array = json_encode(['result' => false, 'msg' => ''.$a->message.'']);
