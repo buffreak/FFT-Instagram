@@ -28,9 +28,7 @@ if (!file_exists("$username.ig")) {
 } else {
     $gip    = file_get_contents($username . '.ig');
     $gip    = json_decode($gip);
-    $cekuki = instagram(1, $gip->useragent, 'users/aziziazwah/usernameinfo/', $gip->cookies); 
-    print_r($cekuki);
-    die();
+    $cekuki = instagram(1, $gip->useragent, 'users/aziziazwah/usernameinfo/', $gip->cookies);
     $cekuki = json_decode($cekuki[1]);
     if ($cekuki->status != "ok") {
         if ($opsiLogin == '1') {
