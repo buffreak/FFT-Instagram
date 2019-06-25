@@ -1,6 +1,6 @@
 <?php
-// error_reporting(0);
-// error_reporting(E_ALL ^ (E_NOTICE | E_WARNING | E_DEPRECATED));
+error_reporting(0);
+error_reporting(E_ALL ^ (E_NOTICE | E_WARNING | E_DEPRECATED));
 require_once('func.php');
 echo "Copyright " . date('Y') . " By Teuku Muhammad Rivai fb.com/RivaiWatermark\n";
 echo "Opsi Login : 1 = Login Token FB, 2. Username / Password : ";
@@ -28,7 +28,7 @@ if (!file_exists("$username.ig")) {
 } else {
     $gip    = file_get_contents($username . '.ig');
     $gip    = json_decode($gip);
-    $cekuki = instagram(1, $gip->useragent, 'users/aziziazwah/usernameinfo/', $gip->cookies);
+    $cekuki = instagram(1, $gip->useragent, 'users/aziziazwah/usernameinfo/', $gip->cookies); 
     $cekuki = json_decode($cekuki[1]);
     if ($cekuki->status != "ok") {
         if ($opsiLogin == '1') {
@@ -129,7 +129,7 @@ if (!file_exists("$username.ig")) {
                             $commentStatus = json_decode($comment[1]);
                             $likeStatus    = json_decode($like[1]);
                             if ($dm == 'fail' || $commentStatus->status != "ok" || $likeStatus->status != "ok") {
-                                echo "FOLLOW STATUS => SUKSES, DM STATUS => ".$dm.", COMMENT STATUS => ".$commentStatus->status.", LIKE STATUS => ".$likeStatus->status; 
+                                echo "@".$ids->username." : FOLLOW STATUS => SUKSES, DM STATUS => ".$dm.", COMMENT STATUS => ".$commentStatus->status.", LIKE STATUS => ".$likeStatus->status."\n"; 
                                 sleep(rand(10, 15)); // UBAH SESUAI KEBUTUHAN / PAKE USLEEP()
                             }else{
                                 echo "Success Follow @" . $ids->username . " Dengan Auto DM, Like dan Komen Foto Terbaru\n";
