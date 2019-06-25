@@ -71,7 +71,7 @@ if (!file_exists("$username.ig")) {
         $idsDecode = json_decode($getFoll[1]);
         $cekfoll = array_slice($idsDecode->users, 0);
         $countMaxId = count($idsDecode->users) - 1;
-        echo $countMaxId."\n";
+        echo "(FOR DEBUG ONLY!) TOTAL MAX_ID => ".$countMaxId."\n";
         foreach($cekfoll as $key => $ids) {
             if($countMaxId === $key){
                 if ($type == "followers") {
@@ -82,6 +82,7 @@ if (!file_exists("$username.ig")) {
                 $idsDecode = json_decode($getFoll[1]);
                 $cekfoll = array_slice($idsDecode->users, 0);
                 $countMaxId = count($idsDecode->users) - 1;
+                echo "(FOR DEBUG ONLY!) TOTAL MAX_ID => ".$countMaxId."\n";
             }
             $getdata = instagram(1, $data->useragent, 'feed/user/' . $ids->pk . '/', $data->cookies);
             $get     = json_decode($getdata[1]);
