@@ -1,9 +1,9 @@
 <?php
-error_reporting(0);
-error_reporting(E_ALL ^ (E_NOTICE | E_WARNING | E_DEPRECATED));
+// error_reporting(0);
+// error_reporting(E_ALL ^ (E_NOTICE | E_WARNING | E_DEPRECATED));
 require_once('func.php');
 echo "Copyright " . date('Y') . " By Teuku Muhammad Rivai fb.com/RivaiWatermark\n";
-echo "Opsi Login : 1 = Login Token FB\nInput :";
+echo "Opsi Login : 1 = Login Token FB, 2. Username / Password : ";
 $opsiLogin = trim(fgets(STDIN));
 if ($opsiLogin == '1') {
     echo "Token FB EAA..... :  ";
@@ -28,13 +28,15 @@ if (!file_exists("$username.ig")) {
 } else {
     $gip    = file_get_contents($username . '.ig');
     $gip    = json_decode($gip);
-    $cekuki = instagram(1, $gip->useragent, 'feed/timeline/', $gip->cookies);
+    $cekuki = instagram(1, $gip->useragent, 'users/aziziazwah/usernameinfo/', $gip->cookies); 
+    print_r($cekuki);
+    die();
     $cekuki = json_decode($cekuki[1]);
     if ($cekuki->status != "ok") {
         if ($opsiLogin == '1') {
             $ulang = masuk($username);
         } else {
-            $ulang = masuk2($username, $password);
+            $ulang = masuk2($username, $gip->password);
         }
         if ($ulang != "data berhasil diinput") {
             echo "Cookie Telah Mati, Gagal Membuat Ulang Cookie\n";
@@ -71,7 +73,7 @@ if (!file_exists("$username.ig")) {
         $idsDecode = json_decode($getFoll[1]);
         $cekfoll = array_slice($idsDecode->users, 0);
         $countMaxId = count($idsDecode->users) - 1;
-        // echo $countMaxId."\n";
+        echo $countMaxId."\n";
         foreach($cekfoll as $key => $ids) {
             if($countMaxId === $key){
                 if ($type == "followers") {
